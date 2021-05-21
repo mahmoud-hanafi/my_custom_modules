@@ -1,0 +1,5 @@
+name: 'shipub Shipping Company'
+type: module
+description: 'Handle any customization to the shipping company accounts'
+core: 8.x
+package: 'shipub'

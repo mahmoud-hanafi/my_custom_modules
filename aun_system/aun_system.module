@@ -1,0 +1,180 @@
+<?php
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\webform\Utility\WebformFormHelper;
+
+
+
+
+
+function aun_system_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+//print $form_id;exit();
+//  global $user;
+  $user = \Drupal::currentUser();
+  $uid = \Drupal::currentUser()->id();
+  $user_account = \Drupal\user\Entity\User::load("$uid"); // pass your uid
+  $roles = $user->getRoles();
+//print_r($roles);exit();
+  if(!(in_array('administrator', $roles))){
+
+    //unset($form['search_tags']);
+    //unset($form['url_alias']);
+    //unset($form['layout_box']);
+    //unset($form['layout_settings']);
+    $form['group_settings']['#access'] = FALSE;
+    $form['revision_information']['#access'] = FALSE;
+    $form['log']['#access'] = FALSE;
+    $form['author']['#access'] = FALSE;
+    $form['options']['#access'] = FALSE;
+    $form['attachments']['#collapsed'] = FALSE;
+    $form['additional_settings']['#access'] = FALSE;
+    $form['node_settings']['#access'] = FALSE;
+    $form['search_tags']['#access'] = FALSE;
+    //print "ddd";
+    //exit;
+  }
+
+  if($form_id == 'node_student_form'){
+    $form['#title'] = t('اضافة طالب');
+    $form['title']['#value'] = t('اضافة طالب');
+    $form['title']['#value'] = '12345';
+    $form['field_student_number']['widget'][0]['value']['#default_value'] = '112'; // for textfield.
+    $form['field_student_number']['widget'][0]['value']['#required'] = 1;
+    //$form['field_student_number']['#access'] = FALSE;
+  }
+  
+  if($form_id =='node_awards_form'){ 
+    if(in_array('faculty_staff', $roles)){
+      $form['field_awards_member']['widget'][0]['target_id']['#default_value'] = $user_account; // for textfield.
+    }
+  }
+  if($form_id =='node_research_form'){
+    if(in_array('faculty_staff', $roles)){
+      $form['field_research_user']['widget'][0]['target_id']['#default_value'] = $user_account; // for textfield.
+    }
+  }
+
+  //Redicred To News Confirmation Form
+  if( $form_id === 'node_news_form' ){
+    foreach (array_keys($form['actions']) as $action) {
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        $form['actions'][$action]['#submit'][] = 'form_news_submit';
+      }
+    }
+  }
+
+  //views_exposed_form_alter
+  if($form['#id'] == 'views-exposed-form-news-archive-page-1'){
+    //kint($form);
+    $form['field_news_date_value']['max']['#title'] = t('To');
+    //$form['#validate'][] = 'archieve_form_validate';
+    //while(empty($form['field_news_date_value']['min']['#value'])){
+      //$form['field_news_date_value']['max']['#disabled'] = true;
+    //}
+    //print $form_state->getValue('field_news_date_value'); //$form['field_news_date_value']['min']['#default_value'];
+    //dpm($form['field_news_date_value']['min']);
+    //exit();
+  }
+
+}
+
+function form_news_submit($form, \Drupal\Core\Form\FormStateInterface $form_state){
+  $nid = $form_state->getformObject()->getEntity()->id();
+  $url = Url::fromUri("internal:/confirm/news/$nid");
+  $form_state->setRedirectUrl($url);
+}
+
+function _return_category_value(){
+  $sql = "SELECT node.nid FROM node_field_data node WHERE node.type ='student'";
+  //print $sql;exit();
+  $database = \Drupal::database();
+  $result = $database->query($sql);
+  $i =1;
+  while ($row_data = $result->fetchAssoc()) {
+    $student_nid = $row_data['nid'];
+  }
+
+}
+
+function news_block($language) {
+  global $base_url;
+  $side_tabs= "";
+  $content_tab= "";
+  $sql = "SELECT nid FROM node_field_data WHERE type= 'news' AND langcode= '$language' ORDER by nid DESC LIMIT 0,8";
+  $database = \Drupal::database();
+  $result = $database->query($sql);
+  $i=0;
+  while ($row_data = $result->fetchAssoc()) {
+    $news_nid = $row_data['nid'];
+    if($language !='en'){$code = "/$language";}
+    $news_link = "$base_url$code/node/$news_nid";
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($news_nid);
+    $news_title = $node->getTitle();
+    $news_date= $node->get('field_news_date')->value;
+    $news_body = substr($node->get('body')->value,0,600);
+    $uri = $node->get('field_news_image')->entity->uri->value;
+    $img_url = file_create_url($uri);
+    if(empty($uri)){ // to get default image 
+      $field_info = FieldConfig::loadByName('node', 'news', 'field_news_image');
+      $image_uuid = $field_info->getSetting('default_image')['uuid'];
+      $image = Drupal::service('entity.repository')->loadEntityByUuid('file', $image_uuid);
+      $image_uri = $image->getFileUri();
+      $img_url = file_create_url($image_uri);
+    }
+    if($i < 1){ $class='active';}else{$class="";}
+    $side_tabs .= "
+       <li class='$class'>
+                <a data-toggle='tab' href='#$i'>
+                    <div class='side_tab'>
+                        <div class='tab-img news-img'><img src='$img_url' /></div>
+                    </div>
+                    <div class='tab-content'>
+                        <p class='news_title'> ".substr($news_title,0,200)."</p>
+                        <p class='news_date'> <i class='fa fa-calendar' aria-hidden='true'></i> $news_date</p>
+                    </div>
+                </a>
+       </li>
+    ";
+    $content_tab .="
+            <div class='tab-pane $class' id='$i'>
+                <div class='tab-content-right'>
+                    <div class='user-data'>
+                        <div class='news-image'><img src='$img_url' /></div>
+                    </div>
+                    <div class='news-content'>
+                      <div class='news-title' >  <a href='$news_link'> $news_title</a></div>
+                      <p class='news_date'> <i class='fa fa-calendar' aria-hidden='true'></i> $news_date</p>
+                       <p>  $news_body </p>
+                    </div>
+                </div>
+            </div>
+    ";
+    $i++;
+  }
+    $block_content ='
+        <div class="col-sm-12 news-block" data-aos="fade-up" data-aos-duration="2000" > 
+            <div class="col-xs-5 news-side-content" >
+                <ul class="nav nav-tabs tabs-left sideways">
+                  '.$side_tabs.'
+                </ul>
+            </div>
+            <div class="col-xs-7 news-main-content">
+                <div class="tab-content">
+                  '.$content_tab.'
+                </div>
+            </div>
+        </div>
+    ';
+    return $block_content;
+}
+
+
+
+?>

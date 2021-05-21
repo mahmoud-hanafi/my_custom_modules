@@ -1,0 +1,32 @@
+fitness_api.example:
+  path: '/api/v1/home/trainee'
+  defaults:
+    _title: 'Home'
+    _controller: '\Drupal\fitness_api\Controller\FitnessApiController::traineeHome'
+  requirements:
+    _role: 'trainee'
+  options:
+    _auth: ['basic_auth', 'cookie']
+fitness_api.user_preferences_controller_updatePreferences:
+  path: '/api/v1/trainee/preferences'
+  defaults:
+    _controller: '\Drupal\fitness_api\Controller\UserPreferencesController::updatePreferences'
+    _title: 'User Preferences'
+  requirements:
+    _role: 'trainee'
+    _content_type_format: 'hal|json|hal_json'
+  methods:  [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+fitness_api.user_profile_controller_updateProfile:
+  path: '/api/v1/trainee/profile'
+  defaults:
+    _controller: '\Drupal\fitness_api\Controller\UserProfileController::updateProfile'
+    _title: 'updateProfile'
+  requirements:
+    _role: 'trainee'
+    _content_type_format: 'hal|json|hal_json'
+  methods:  [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']

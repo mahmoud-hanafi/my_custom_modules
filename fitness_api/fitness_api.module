@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Fitness API module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+
+ /**
+ * Implements hook_views_query_alter().
+ */
+function fitness_api_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  $account = \Drupal::currentUser();
+  $user_id = $account->id();
+
+  if ($view->id() == 'api_registration_questions' && !empty($user_id)) {
+   $answered_questions = _fitness_api_get_trainee_answered_questions($user_id);
+
+   // Traverse through the 'where' part of the query.
+   foreach ($query->where as &$condition_group) {
+     foreach ($condition_group['conditions'] as &$condition) {
+       if ($condition['field'] === 'node_field_data.nid' && !empty($answered_questions)) {
+
+          $condition = [
+            'field' => 'node_field_data.nid',
+            'value' => $answered_questions,
+            'operator' => 'NOT IN',
+          ];
+       }
+     }
+   }
+ }
+}
+
+function fitness_api_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'api_registration_questions') {
+    $view->element['#cache']['contexts'][] = 'user.questions';
+  }
+}
+
+/**
+ * Return array of answered questions by user ID.
+ */
+function _fitness_api_get_trainee_answered_questions($user_id) {
+  $database = \Drupal::database();
+  $query = $database->select('user_preferences_entity__field_question', 'q');
+  $query->join('user_preferences_entity__field_user', 'u', 'u.entity_id = q.entity_id');
+  $query->join('node__field_rq_required', 'qr', 'qr.entity_id = q.field_question_target_id');
+  $query->condition('u.field_user_target_id', $user_id);
+  $query->condition('qr.field_rq_required_value', 1);
+  $query->fields('q', ['field_question_target_id']);
+  $result = $query->execute();
+
+  return $result->fetchCol();
+}

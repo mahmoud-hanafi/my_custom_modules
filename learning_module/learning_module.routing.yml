@@ -1,0 +1,34 @@
+learning_module.demo:
+  path: 'dummy/data'
+  defaults:
+    _controller: '\Drupal\learning_module\Controller\demo::dummy_function'
+    _title: 'print dummy data'
+  requirements:
+    _access: 'TRUE'
+
+works_api.printJsonController:
+  path: 'api/v1/test'
+  defaults:
+    _controller: 'Drupal\learning_module\Controller\printJsonController::printJsonObject'
+    _title: 'JSON api'
+  methods:  [GET]
+  requirements:
+    _access: 'TRUE'
+
+works_api.postJsonRequest:
+  path: 'api/v1/post'
+  defaults:
+    _controller: 'Drupal\learning_module\Controller\postJsonRequest::addArticle'
+    _title: 'Add Node of type Article'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    _content_type_format: 'hal|json|hal_json'
+  
+works_api.printCustomBlock:
+  path: 'print/module'
+  defaults:
+    _controller: 'Drupal\learning_module\Controller\printCustomBlock::displayBlock'
+    _title: 'Print Custom module through twig template'
+  requirements:
+    _access: 'TRUE'

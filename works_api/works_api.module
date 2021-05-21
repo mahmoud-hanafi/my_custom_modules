@@ -1,0 +1,48 @@
+<?php 
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Url;
+
+function works_api_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+    if ($entity->getType() == 'product') {
+      $price =  $entity->field_price->value;
+      $quantity = $entity->field_quantity->value;
+      $entity->field_rest->value = $quantity;
+      $entity->field_rest_price->value = $quantity * $price;
+      print $entity->field_rest_price->value;
+      print $entity->field_rest->value;
+    }
+}
+
+/*function works_api_views_api() {
+  return array(
+    'api' => 3,
+  );
+}
+
+function works_api_views_query_alter(&$view, &$query) {
+  print $view->name;
+  exit();
+}*/
+function works_api_form_views_exposed_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  /*$view = $form_state->get('view');
+  var_dump($form_state);
+  print $view->id();
+  exit();*/
+  //if ($view->id() == 'page_1') {
+    /*$arg = $view->args[0];  // get first argument from view
+    $vid = 'my_taxonomy';
+    $terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid);  // build term tree
+    $options['All'] = 'All';  // add wildcard option
+    foreach ($terms as $term) {
+      if(in_array($arg, $term->parents)){  // check if argument is parent of term
+       $options[$term->tid] = $term->name;
+      }
+    }
+    $form['category']['#options'] = $options;*/
+  //}
+}
+?>

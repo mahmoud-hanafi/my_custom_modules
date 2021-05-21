@@ -1,0 +1,8 @@
+
+shipub_shipping_company.quick_order_controller_quickOrderForm:
+  path: '/add/order/quick'
+  defaults:
+    _controller: '\Drupal\shipub_shipping_company\Controller\QuickOrderController::quickOrderForm'
+    _title: 'Create Order'
+  requirements:
+    _role: 'shipping_company_representor'

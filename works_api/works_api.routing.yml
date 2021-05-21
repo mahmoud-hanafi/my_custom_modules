@@ -1,0 +1,27 @@
+works_api.JsonApiController:
+  path: 'works/api'
+  defaults:
+    _controller: 'Drupal\works_api\Controller\JsonApiController::renderApi'
+    _title: 'JSON api'
+  methods:  [POST]
+  requirements:
+    _access: 'TRUE'
+
+# Route for test api response.
+works_api.JsonApiController:
+  path: 'works/api/test'
+  defaults:
+    _controller: 'Drupal\works_api\Controller\JsonApiController::testApi'
+    _title: 'JSON api'
+  methods:  [GET]
+  requirements:
+    _access: 'TRUE'
+
+
+my_module.form:
+  path: 'sell/product'
+  defaults:
+    _form: '\Drupal\works_api\Form\sellProduct'
+    _title: 'Sell Product Form'
+  requirements:
+    _permission: 'access content'

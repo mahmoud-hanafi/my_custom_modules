@@ -1,0 +1,14 @@
+
+# Notifications menu items definition
+entity.notification.collection:
+  title: 'Notifications list'
+  route_name: entity.notification.collection
+  description: 'List Notifications entities'
+  parent: system.admin_structure
+  weight: 100
+
+notification.admin.structure.settings:
+  title: 'Notifications settings'
+  description: 'Configure Notifications entities'
+  route_name: notification.settings
+  parent: system.admin_structure

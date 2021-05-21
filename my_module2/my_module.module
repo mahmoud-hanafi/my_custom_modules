@@ -1,0 +1,63 @@
+<?php
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Url;
+
+
+function my_module_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  //print $form_id;
+  //kint();
+  //exit();
+  $user = \Drupal::currentUser();
+  $uid = \Drupal::currentUser()->id();
+  $user_account = \Drupal\user\Entity\User::load("$uid"); 
+  $name = $user_account->get('name')->value; 
+  $roles = $user->getRoles();
+  if( $form_id == 'node_student_form' ){
+    $form['#validate'][] = 'student_form_validate';
+    $form['actions']['submit']['#value']='add student';
+    //$form['field_student_adder']['#access']=false;
+    $form['field_id']['#access'] = false;
+    $form['field_student_adder']['widget'][0]['value']['#required']=true; 
+    $form['field_student_adder']['widget'][0]['value']['#unique']=true;  
+    if(in_array('ali_roles',$roles)){
+        $form['field_student_adder']['widget'][0]['value']['#default_value']=  $name ;  
+    }
+  }  
+  if( $form_id == 'node_student_edit_form' ){
+    $form['actions']['submit']['#value'] ='Edit Student';
+  }
+}
+
+
+function  student_form_validate ($form , \Drupal\Core\Form\FormStateInterface $form_state ){
+ //if (strlen($form_state->getValue('title')) <= 5) {
+   // $form_state->setErrorByName('title', t('Title is less than 5 characters'));
+  //}
+  if ($form_state->getValue('field_age') < 18){
+    $form_state->setErrorByName('field_age', t('this a university website the age of student must be larger than 18'));
+  }
+}
+
+function my_module_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+    if ($entity->getType() == 'student') {
+      //print 'asd';
+      //exit();
+      $now = new DateTime();
+      $year = $now->format("Y");
+      $sql  = "select field_id_value sid  FROM  node__field_id ORDER BY sid DESC limit 1";
+      $database = \Drupal::database();
+      $result = $database->query($sql);
+      while ($row_data = $result->fetchAssoc()) {
+        $old_id = $row_data['sid'];
+      }
+      $new_id = $old_id+1;
+      $birth_date =  $entity->field_birth_date->value;
+      $entity->field_id->value = "$new_id" . "$birth_date" ;
+      print $entity->field_student_adder->value;
+    } 
+}
+?>

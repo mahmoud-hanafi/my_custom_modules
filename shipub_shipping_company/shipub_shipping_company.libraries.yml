@@ -1,0 +1,6 @@
+quick-order-create:
+  version: 1.x
+  js:
+    js/quick-order.js: { }
+  dependencies:
+    - core/jquery

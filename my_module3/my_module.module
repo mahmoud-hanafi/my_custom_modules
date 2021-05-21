@@ -1,0 +1,118 @@
+<?php
+
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Url;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Utility\Html;
+
+/**
+ * implement_form_alter
+ */
+
+function my_module_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $form['gva_node_settings']['#access'] = FALSE;
+  $form['author']['#access'] = FALSE;
+  $form['revision_information']['#access'] = FALSE;
+  $form['options']['#access'] = FALSE;
+  $form['menu']['#access'] = FALSE;
+  $form['alias']['#access'] = FALSE;
+
+  if( $form_id === 'node_article_form' ){
+    foreach (array_keys($form['actions']) as $action) {
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        $form['actions'][$action]['#submit'][] = 'form_article_submit';
+      }
+    }
+  }
+  //kint($form);
+  //exit();
+}
+
+/**
+ * submit Handler For 
+ */
+function form_article_submit($form, \Drupal\Core\Form\FormStateInterface $form_state){
+  $nid = $form_state->getformObject()->getEntity()->id();
+  $url = Url::fromUri("internal:/confirm/branch/$nid");
+  $form_state->setRedirectUrl($url);
+}
+
+function my_module_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+    
+    if ($entity->getType() == 'branches') {
+        /*$field_city = $entity->field_city;
+        $city = $field_city->getFieldDefinition()->getFieldStorageDefinition()->getOptionsProvider('value', $field_city->getEntity())->getPossibleOptions()[$field_city->value];
+        $field_countery = $entity->field_countery;
+        $countery = $field_countery->getFieldDefinition()->getFieldStorageDefinition()->getOptionsProvider('value', $field_countery->getEntity())->getPossibleOptions()[$field_countery->value];
+        //print "$city"."-"."$countery" ;
+        //exit();*/
+        $entityManager = \Drupal::service('entity_field.manager');
+        $fields = $entityManager->getFieldStorageDefinitions('node');
+        $cities = options_allowed_values($fields['field_city']);
+        $city_value = $entity->field_city->value;
+        $city =  $cities[$city_value];
+        $counteries = options_allowed_values($fields['field_countery']);
+        $countery_value = $entity->field_countery->value;
+        $countery = $counteries[$countery_value];
+        $entity->field_full_address->value = "$city"."-"."$countery" ;
+        //print $entity->field_full_address->value;
+
+    }
+}
+
+function my_module_mail($key, &$message, $params) {
+    $options = array(
+      'langcode' => $message['langcode'],
+    );
+    switch ($key) {
+      case 'course_deletion':
+        $message['from'] = \Drupal::config('system.site')->get('mail');
+        $message['subject'] = t('Your mail subject Here: @title', array('@title' => $params['title']), $options);
+        $message['body'][] = Html::escape($params['message']);
+      break;
+    }
+    /*$options = [
+        'langcode' => $message['langcode'],
+    ];
+
+    $from = \Drupal::config('system.site')
+        ->get('mail');
+      $message['subject'] = t('E-mail sent from @site-name', [
+        '@site-name' => $from,
+    ], $options);
+
+      // Note that the message body is an array, not a string.
+    $account = \Drupal::currentUser();
+    $message['body'][] = t('@name sent you the following message:', [
+        '@name' => $account
+        ->getAccountName(),
+    ], $options);
+
+      // Because this is just user-entered text, we do not need to translate it.
+      // Since user-entered text may have unintentional HTML entities in it like
+      // '<' or '>', we need to make sure these entities are properly escaped,
+      // as the body will later be transformed from HTML to text, meaning
+      // that a normal use of '<' will result in truncation of the message.
+    $message['body'][] = $params['message'];*/
+
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function my_module_theme($existing, $type, $theme, $path) {
+  return [
+    'my_template' => [
+      'variables' => ['test_var' => NULL , 'test' => Null , "demo" => NULL],
+    ],
+  ];
+}
+
+
+?>

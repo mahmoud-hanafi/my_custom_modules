@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * @file
+ * Contains shipub_shipping_company.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function shipub_shipping_company_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the shipub_shipping_company module.
+    case 'help.page.shipub_shipping_company':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Handle any customization to the shipping company accounts') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function shipub_shipping_company_theme() {
+  return [
+    'shipub_shipping_company' => [
+      'render element' => 'form'
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function shipub_shipping_company_entity_type_alter(array &$entity_types) {
+  // We get all form modes, for all entities, and loop through them.
+  $form_modes = \Drupal::service('entity_display.repository')->getAllFormModes();
+  foreach ($form_modes as $entity_type => $display_modes) {
+    if ($entity_type !== 'node') {
+      // We are only interested in adding a handler to the Node entity.
+      continue;
+    }
+
+    $node_type = $entity_types[$entity_type];
+    foreach ($display_modes as $machine_name => $form_display) {
+      if ($machine_name !== 'order_quick_mode') {
+        // We are only interested in adding this form mode to the definition.
+        continue;
+      }
+      // We get the default handler class. It will be enough for us.
+      $default_handler_class = $node_type->getHandlerClasses()['form']['default'];
+      // We set the form class, keyed by the machine name of our custom form mode.
+      $node_type->setFormClass($machine_name, $default_handler_class);
+    }
+  }
+}

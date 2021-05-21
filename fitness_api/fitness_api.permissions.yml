@@ -1,0 +1,4 @@
+administer fitness_api configuration:
+  title: 'Administer fitness_api configuration'
+  description: 'Optional description.'
+  restrict access: true

@@ -1,0 +1,16 @@
+notification.book_course:
+  path: 'book/course'
+  defaults:
+    _controller: '\Drupal\notification\Controller\book_course::booking_course'  
+    _title: 'apply course'    
+  requirements:
+    _permission: 'access content'
+
+
+notification.show_notifications:
+  path: 'show/notification'
+  defaults:
+    _controller: '\Drupal\notification\Controller\show_notifications::show'  
+    _title: 'show notification'    
+  requirements:
+    _permission: 'access content'

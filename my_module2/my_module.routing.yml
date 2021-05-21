@@ -1,0 +1,69 @@
+my_module.fun_handling_page:
+  path: 'print/msg'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\fun_handling_page::test'
+    _title: 'print welcome message'
+  requirements:
+    _permission: 'access content'
+
+
+
+my_module.page_delete:
+  path: 'page/update'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\page_delete::page_update'
+    _title: 'delete basic page'
+  requirements:
+    _permission: 'access content'
+
+
+my_module.people_update:
+  path: 'peoples/update'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\people_update::handle_users_delete'
+    _title: 'delete all users'
+  requirements:
+    _permission: 'access content'
+
+
+my_module.event_integration:
+  path: 'add/event'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\event_integration::transfer_integration'
+    _title: 'add events'
+  requirements:
+   _permission: 'access content'
+
+  
+my_module.delete_events:
+  path: 'delete/event'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\delete_events::delete_all_events'      
+    _title: 'delete events'
+  requirements:
+    _permission: 'access content'
+
+
+my_module.retrieve:
+  path: 'retrieve/age'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\retrieve::retrieve_age'      
+    _title: 'retrieve age'
+  requirements:
+    _permission: 'access content'
+
+my_module.form:
+  path: 'drupal/example/form'
+  defaults:
+    _form: '\Drupal\my_module\Form\ExampleForm'
+    _title: 'Example form'
+  requirements:
+    _permission: 'access content'
+
+my_module.form:
+  path: 'search/student'
+  defaults:
+    _form: '\Drupal\my_module\Form\searchForm'
+    _title: 'Search Form'
+  requirements:
+    _permission: 'access content'

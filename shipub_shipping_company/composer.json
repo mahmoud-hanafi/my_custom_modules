@@ -1,0 +1,13 @@
+{
+    "name": "shipub_shipping_company",
+    "type": "drupal-module",
+    "description": "Handle any customization to the shipping company accounts",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/shipub_shipping_company",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/shipub_shipping_company",
+        "source": "http://cgit.drupalcode.org/shipub_shipping_company"
+    }
+}

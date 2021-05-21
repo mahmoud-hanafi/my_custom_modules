@@ -1,0 +1,6 @@
+# services:
+#   fitness_api.event_subscriber:
+#     class: Drupal\fitness_api\EventSubscriber\FitnessApiSubscriber
+#     arguments: ['@messenger']
+#     tags:
+#       - { name: event_subscriber }

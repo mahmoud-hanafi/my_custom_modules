@@ -1,0 +1,74 @@
+my_module.fun_handling_page:
+  path: 'print/msg'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\fun_handling_page::test'
+    _title: 'print welcome message'
+  requirements:
+    _permission: 'access content'
+
+
+
+my_module.page_delete:
+  path: 'page/update'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\page_delete::page_update'
+    _title: 'delete basic page'
+  requirements:
+    _permission: 'access content'
+
+
+my_module.people_update:
+  path: 'peoples/update'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\people_update::handle_users_delete'
+    _title: 'delete all users'
+  requirements:
+    _permission: 'access content'
+
+
+my_module.retrieve:
+  path: 'retrieve/age'
+  defaults: 
+    _controller: '\Drupal\my_module\Controller\retrieve::retrieve_age'      
+    _title: 'retrieve age'
+  requirements:
+    _permission: 'access content'
+
+
+my_module.record_course:
+  path: 'apply/course'
+  defaults:
+    _controller: '\Drupal\my_module\Controller\record_course::content'  
+    _title: 'apply course'    
+  requirements:
+    _permission: 'access content'
+
+
+my_module.MovieList:
+    path: '/movies-list'
+    defaults:
+        _title: 'Movie List'
+        _controller: '\Drupal\my_module\Controller\MovieList::overview'
+    requirements:
+        _permission: 'movies list'
+
+#my_module.form:
+#  path: 'delete/course'
+#  defaults:
+#    _form: '\Drupal\my_module\Form\deleteCourse'
+#    _title: 'Course Delete Form'
+#  requirements:
+#    _permission: 'access content'
+
+my_module.form:
+  path: 'confirm/branch/{node}'
+  defaults:
+    _form: '\Drupal\my_module\Form\confirmation'
+    _title: 'Confirm Article Form'
+  requirements:
+    _permission: 'access content'
+    _entity_bundles: node:articles
+  options:
+    parameters:
+      node:
+        type: entity:node

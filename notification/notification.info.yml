@@ -1,0 +1,8 @@
+name: Notification
+type: module
+description: 'Applying Course Notification'
+core: 8.x
+package: Notification
+dependencies:
+  - node
+  - user

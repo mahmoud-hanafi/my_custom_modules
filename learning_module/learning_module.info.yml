@@ -1,0 +1,5 @@
+name: 'Self-Learning'
+type: module
+description: 'custom module for learning'
+core: 8.x
+package: 'learning'
